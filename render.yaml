@@ -4,7 +4,7 @@ services:
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile  # optional if using official odoo image below
-    image: odoo:17.0
+    image: "odoo:17.0"
     startCommand: odoo
     envVars:
       - key: HOST
