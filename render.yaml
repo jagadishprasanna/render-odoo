@@ -1,27 +1,45 @@
 services:
   - type: web
-    name: odoo-app
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile  # optional if using official odoo image below
+    name: odoo-web
+    runtime: docker
     image: "odoo:17.0"
-    startCommand: odoo
+    plan: standard
+    numInstances: 1
     envVars:
       - key: HOST
         value: 0.0.0.0
       - key: PORT
-        value: 10000
-      - key: DATABASE_URL
-        fromDatabase:
+        value: 8069
+      - key: DB_HOST
+        fromService:
+          type: pserv
           name: odoo-db
-          property: connectionString
+      - key: DB_PORT
+        value: 5432
+      - key: DB_USER
+        value: odoo
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        value: odoo
     disk:
-      name: odoo-web-data
+      name: odoo-data
       mountPath: /var/lib/odoo
-    autoDeploy: true
-  
-databases:
-  - name: odoo-db
-    databaseName: odoo
-    user: odoo
-    plan: free
+      sizeGB: 10
+
+  - type: pserv
+    name: odoo-db
+    runtime: docker
+    image: "postgres:15"
+    plan: standard
+    envVars:
+      - key: POSTGRES_DB
+        value: odoo
+      - key: POSTGRES_USER
+        value: odoo
+      - key: POSTGRES_PASSWORD
+        sync: false
+    disk:
+      name: odoo-db-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
