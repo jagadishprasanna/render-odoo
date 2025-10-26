@@ -1,0 +1,2 @@
+# render-odoo
+odoo deploy
